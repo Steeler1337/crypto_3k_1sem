@@ -1,0 +1,17 @@
+.original {
+    width: 100%; 
+    resize: none;
+}
+
+.btn-primary {
+    background-color: rgb(121, 121, 121);
+    border-color: black;
+}
+
+.encrypt {
+    background-color: green;
+}
+
+.decrypt {
+    background-color: red;
+}
