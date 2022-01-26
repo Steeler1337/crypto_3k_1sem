@@ -13,6 +13,8 @@ key_object = document.getElementById('key');
 desc1 = document.getElementById('description1');
 desc1.style.display = 'none';
 key_field = document.getElementById('key');
+key_field.hidden = true;
+decrypt_button = document.getElementById('decrypt');
 
 
 encrypt_button = document.getElementById('encrypt');
@@ -20,17 +22,18 @@ decrypt_button = document.getElementById('decrypt');
 encrypted_text = ''
 decrypted_text = ''
 
+////////////////////////// БЛОКНОТ ШЕННОНА
 
-////////////////////////// ВЕРТИКАЛЬНАЯ ПЕРЕСТАНОВКА
-
-vertic = document.getElementById('vertic');
-vertic.onclick = function () {
-    desc1.style.display = 'block';
-    key_field.style.display = 'block';
+bloknot = document.getElementById('bloknot');
+bloknot.onclick = function () {
+    desc1.style.display = 'none';
+    key_field.style.display = 'none';
+    decrypt_button.hidden = false;
     encrypted_text = ''
     decrypted_text = ''
     document.getElementById('encrypted').innerHTML = '' //очищаю формы с результатами
     document.getElementById('decrypted').innerHTML = ''
+    key_list = [] // для дешифровки
     encrypt_button.onclick = function () {
         document.getElementById('decrypted').innerHTML = ''
         encrypted_text = ''
@@ -55,9 +58,10 @@ vertic.onclick = function () {
         }
         ot = clean_text
         key_string = key_object.value;
-        url = `${window.location.origin}` + '/encodeLab4' + `?orig_text=${ot}&key=${key_string}`;
+        url = `${window.location.origin}` + '/lab5bloknotEnc' + `?msg=${ot}`;
         sendRequest(url, 'GET', function () {
-            encrypted_text = this.response;
+            encrypted_text = this.response[0];
+            key_list = this.response[1];
             document.getElementById('encrypted').innerHTML = encrypted_text;
         })
     }
@@ -65,7 +69,7 @@ vertic.onclick = function () {
     decrypt_button.onclick = function () {
         decrypted_text = ''
         et = encrypted_text;
-        url = `${window.location.origin}` + '/decodeLab4' + `?enc_text=${et}&key=${key_string}`;
+        url = `${window.location.origin}` + '/lab5bloknotDecode' + `?msg=${et}&key_list=${key_list}`;
         sendRequest(url, 'GET', function () {
             decrypted_text = this.response;
             decrypted_text = decrypted_text.replaceAll('тчк', '.');
@@ -84,10 +88,15 @@ vertic.onclick = function () {
 }
 
 
-kardano = document.getElementById('kardano');
-kardano.onclick = function () {
+
+////////////////////// ГОСТ 28147-89
+
+
+gost89 = document.getElementById('gost89');
+gost89.onclick = function () {
     desc1.style.display = 'none';
     key_field.style.display = 'none';
+    decrypt_button.hidden = true;
     encrypted_text = ''
     decrypted_text = ''
     document.getElementById('encrypted').innerHTML = '' //очищаю формы с результатами
@@ -116,32 +125,11 @@ kardano.onclick = function () {
         }
         ot = clean_text
         key_string = key_object.value;
-        url = `${window.location.origin}` + '/encodeLab41' + `?orig_text=${ot}&check=${1}`;
+        url = `${window.location.origin}` + '/lab5gost98Enc' + `?msg=${ot}`;
         sendRequest(url, 'GET', function () {
-            encrypted_text = this.response;
-            encrypted_text = encrypted_text.replaceAll(' ', '')
+            encrypted_text = this.response[0];
+            decrypted_text = this.response[1];
             document.getElementById('encrypted').innerHTML = encrypted_text;
-        })
-
-    }
-
-    decrypt_button.onclick = function () {
-        decrypted_text = ''
-        original_text = document.getElementById('originalText');
-        ot = original_text.value;
-        ot = ot.replaceAll('.', '');
-        ot = ot.replaceAll(',', '');
-        ot = ot.replaceAll('!', '');
-        ot = ot.replaceAll('-', ' ');
-        ot = ot.replaceAll('?', '');
-        ot = ot.replaceAll(';', '');
-        ot = ot.replaceAll(':', '');
-        ot = ot.replaceAll('\n', ' ');
-        ot = ot.replaceAll(' ', '');
-        length_of_original_text = ot.length;
-        url = `${window.location.origin}` + '/encodeLab41' + `?orig_text=${ot}&check=${2}`;
-        sendRequest(url, 'GET', function () {
-            decrypted_text = this.response;
             decrypted_text = decrypted_text.replaceAll('тчк', '.');
             decrypted_text = decrypted_text.replaceAll('зпт', ',');
             decrypted_text = decrypted_text.replaceAll('вскл', '!');
@@ -152,7 +140,6 @@ kardano.onclick = function () {
             decrypted_text = decrypted_text.replaceAll('двоеточ', ':');
             decrypted_text = decrypted_text.replaceAll('тчзапят', ';');
             document.getElementById('decrypted').innerHTML = decrypted_text;
-            decrypted_text = '';
         })
     }
 }
